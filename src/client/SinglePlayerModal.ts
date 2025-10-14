@@ -20,7 +20,6 @@ import { generateID } from "../core/Util";
 import "./components/baseComponents/Button";
 import "./components/baseComponents/Modal";
 import "./components/Difficulties";
-import "./components/FluentSlider";
 import "./components/Maps";
 import { fetchCosmetics } from "./Cosmetics";
 import { FlagInput } from "./FlagInput";
@@ -45,6 +44,7 @@ export class SinglePlayerModal extends LitElement {
   @state() private useRandomMap: boolean = false;
   @state() private gameMode: GameMode = GameMode.FFA;
   @state() private teamCount: TeamCountConfig = 2;
+
   @state() private disabledUnits: UnitType[] = [];
 
   private userSettings: UserSettings = new UserSettings();
@@ -220,16 +220,24 @@ export class SinglePlayerModal extends LitElement {
             </div>
             <div class="option-cards">
               <label for="bots-count" class="option-card">
-                <!-- Slider -->
-                <fluent-slider
-                  .value=${this.bots}
-                  .min=${0}
-                  .max=${400}
-                  .step=${1}
-                  ariaLabel=${translateText("single_modal.bots")}
+                <input
+                  type="range"
+                  id="bots-count"
+                  min="0"
+                  max="400"
+                  step="1"
                   @input=${this.handleBotsChange}
-                ></fluent-slider>
+                  @change=${this.handleBotsChange}
+                  .value="${String(this.bots)}"
+                />
+                <div class="option-card-title">
+                  <span>${translateText("single_modal.bots")}</span>${this
+                    .bots === 0
+                    ? translateText("single_modal.bots_disabled")
+                    : this.bots}
+                </div>
               </label>
+
               <label
                 for="singleplayer-modal-disable-npcs"
                 class="option-card ${this.disableNPCs ? "selected" : ""}"
@@ -364,11 +372,10 @@ export class SinglePlayerModal extends LitElement {
   }
 
   private handleBotsChange(e: Event) {
-    const inputEl = e.target as HTMLInputElement;
-    let value = inputEl.valueAsNumber;
-    if (Number.isNaN(value)) return;
-    if (value < 0) value = 0;
-    if (value > 400) value = 400;
+    const value = parseInt((e.target as HTMLInputElement).value);
+    if (isNaN(value) || value < 0 || value > 400) {
+      return;
+    }
     this.bots = value;
   }
 
