@@ -77,15 +77,23 @@ export class FluentSlider extends LitElement {
     );
   }
 
+  private handleSliderInput(e: Event) {
+    const target = e.target as HTMLInputElement;
+    this.value = target.valueAsNumber;
+  }
+
   private handleSliderChange(e: Event) {
     const target = e.target as HTMLInputElement;
-    this.value = Number(target.value);
+    this.value = target.valueAsNumber;
     this.dispatchValueChange();
   }
 
   private handleNumberChange(e: Event) {
     const target = e.target as HTMLInputElement;
-    let val = Number(target.value);
+    let val = target.valueAsNumber;
+    if (isNaN(val)) {
+      val = this.min;
+    }
     if (val < this.min) val = this.min;
     if (val > this.max) val = this.max;
     this.value = val;
@@ -109,8 +117,9 @@ export class FluentSlider extends LitElement {
           .min=${this.min}
           .max=${this.max}
           .step=${this.step}
-          .value=${String(this.value)}
-          @input=${this.handleSliderChange}
+          .valueAsNumber=${this.value}
+          @input=${this.handleSliderInput}
+          @change=${this.handleSliderChange}
         />
 
         <div class="option-card-title">
@@ -121,7 +130,7 @@ export class FluentSlider extends LitElement {
                 type="number"
                 .min=${this.min}
                 .max=${this.max}
-                .value=${this.value}
+                .valueAsNumber=${this.value}
                 @input=${this.handleNumberChange}
                 @blur=${() => (this.isEditing = false)}
                 @keydown=${this.handleNumberKeyDown}
