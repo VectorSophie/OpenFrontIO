@@ -24,6 +24,7 @@ import {
 import { generateID } from "../core/Util";
 import "./components/baseComponents/Modal";
 import "./components/Difficulties";
+import "./components/FluentSlider";
 import "./components/Maps";
 import { JoinLobbyEvent } from "./Main";
 import { renderUnitTypeOptions } from "./utilities/RenderUnitTypeOptions";
@@ -311,25 +312,17 @@ export class HostLobbyModal extends LitElement {
               ${translateText("host_modal.options_title")}
             </div>
             <div class="option-cards">
-              <label for="bots-count" class="option-card">
-                <input
-                  type="range"
-                  id="bots-count"
+              <div class="option-card">
+                <fluent-slider
                   min="0"
                   max="400"
                   step="1"
-                  @input=${this.handleBotsChange}
-                  @change=${this.handleBotsChange}
-                  .value="${String(this.bots)}"
-                />
-                <div class="option-card-title">
-                  <span>${translateText("host_modal.bots")}</span>${
-                    this.bots === 0
-                      ? translateText("host_modal.bots_disabled")
-                      : this.bots
-                  }
-                </div>
-              </label>
+                  .value=${this.bots}
+                  labelKey="host_modal.bots"
+                  disabledKey="host_modal.bots_disabled"
+                  @value-changed=${this.handleBotsChange}
+                ></fluent-slider>
+              </div>
 
                 <label
                   for="disable-npcs"
